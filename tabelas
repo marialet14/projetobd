@@ -588,7 +588,7 @@ SELECT NOME FROM EVENTO;
 /*Exibir os subeventos associados ao evento com ID 1.*/
 SELECT * FROM SUBEVENTO WHERE ID_EVENTO = 1;
 
-ARTICIPANTES DESC;
+PARTICIPANTES DESC;
 
 /*listar eventos com subeventos em mais de um local*/
 SELECT E.NOME AS EVENTO, COUNT(DISTINCT S.LOCAL) AS NUM_LOCAIS
