@@ -478,3 +478,132 @@ INSERT ALL
     INTO EMITE (ID_EVENTO, ID_PARTICIPANTE, ID_CERTIFICADO) VALUES (18, 19, 19)
     INTO EMITE (ID_EVENTO, ID_PARTICIPANTE, ID_CERTIFICADO) VALUES (19, 20, 20)
 SELECT 1 FROM DUAL;
+
+/*Obter a descrição dos subeventos no evento com ID 5.*/
+SELECT DESCRICAO FROM SUBEVENTO WHERE ID_EVENTO = 5;
+
+/*Listar todos os emails cadastrados.*/
+SELECT * FROM EMAIL;
+
+/*Listar todas as sessões cadastradas.*/
+SELECT * FROM SESSAO;
+
+/*Obter os nomes dos eventos realizados na cidade de São Paulo.*/
+SELECT NOME 
+FROM EVENTO 
+WHERE LOCAL = 'São Paulo';
+
+/*Obter a descrição dos subeventos no evento com ID 5.*/
+SELECT * 
+FROM CERTIFICADO 
+WHERE ID_EVENTO = 4;
+
+/*Obter os eventos de Outubro*/
+SELECT * 
+FROM EVENTO 
+WHERE EXTRACT(MONTH FROM DATA_EVENTO) = 10;
+
+/*Obter as sessões com Início às 8 horas e Término às 13*/
+SELECT * 
+FROM SESSAO
+WHERE EXTRACT(HOUR FROM HORA_INICIO) >= 8
+AND EXTRACT(HOUR FROM HORA_TERMINO) <= 13;
+
+/*Listar os Criadores dos Eventos*/
+SELECT U.NOME AS CRIADOR, E.NOME AS EVENTO
+FROM CRIADOR C
+JOIN USUARIO U ON C.ID_USUARIO = U.ID
+JOIN EVENTO E ON C.ID_USUARIO = E.ID_CRIADOR;
+
+/*Exibir os eventos que possuem pelo menos um subevento associado*/
+SELECT DISTINCT E.NOME AS EVENTO
+FROM EVENTO E
+JOIN SUBEVENTO S ON E.ID = S.ID_EVENTO;
+
+/*Listar os participantes e os eventos para os quais receberam certificados.*/
+SELECT U.NOME AS PARTICIPANTE, E.NOME AS EVENTO
+FROM CERTIFICADO C
+JOIN PARTICIPANTE P ON C.ID_PARTICIPANTE = P.ID_USUARIO
+JOIN USUARIO U ON P.ID_USUARIO = U.ID
+JOIN EVENTO E ON C.ID_EVENTO = E.ID;
+
+/*Mostrar a relação entre eventos e seus subeventos.*/
+SELECT E.NOME AS EVENTO, S.NOME AS SUBEVENTO
+FROM EVENTO E
+JOIN SUBEVENTO S ON E.ID = S.ID_EVENTO;
+
+/*Obter eventos organizados por um criador específico*/
+SELECT E.NOME 
+FROM EVENTO E 
+JOIN CRIADOR C ON E.ID_CRIADOR = C.ID_USUARIO
+JOIN USUARIO U ON C.ID_USUARIO = U.ID
+WHERE U.NOME = 'Alice Silva';
+
+/*Obter Emails de participantes que possuem certificados.*/
+SELECT DISTINCT EM.EMAIL
+FROM CERTIFICADO C
+JOIN PARTICIPANTE P ON C.ID_PARTICIPANTE = P.ID_USUARIO
+JOIN EMAIL EM ON P.ID_USUARIO = EM.ID_USUARIO;
+
+/*Listar a quantidade de eventos por local*/
+SELECT LOCAL, COUNT(*) AS NUM_EVENTOS
+FROM EVENTO
+GROUP BY LOCAL;
+
+/*Mostrar os participantes que participaram de eventos em mais de uma cidade.*/
+SELECT U.NOME, COUNT(DISTINCT E.LOCAL) AS NUM_CIDADES
+FROM USUARIO U
+JOIN PARTICIPANTE P ON U.ID = P.ID_USUARIO
+JOIN PARTICIPACAO PA ON P.ID_USUARIO = PA.ID_PARTICIPANTE
+JOIN EVENTO E ON PA.ID_EVENTO = E.ID
+GROUP BY U.NOME
+HAVING COUNT(DISTINCT E.LOCAL) >= 1;
+
+/*Selecionar os Eventos e seus Criadores cujo cpf comece com 123*/
+SELECT E.NOME, U.NOME
+FROM EVENTO E
+JOIN CRIADOR C ON E.ID_CRIADOR = C.ID_USUARIO
+JOIN USUARIO U ON C.ID_USUARIO = U.ID
+WHERE U.CPF LIKE '123%';
+
+/*contar quantas sessões ocorreram em Junho*/
+SELECT COUNT(*) AS NUM_SESSOES 
+FROM SESSAO 
+WHERE EXTRACT(MONTH FROM DATA_EVENTO) = 06;
+
+/*Selecionar a quantidade de certificados cadastrados*/
+SELECT COUNT(*) AS TOTAL_CERTIFICADOS FROM CERTIFICADO;
+
+/*listar os eventos ordenados pela quantidade de participantes*/
+SELECT E.NOME AS EVENTO, COUNT(PA.ID_PARTICIPANTE) AS NUM_PARTICIPANTES
+FROM EVENTO E
+JOIN PARTICIPACAO PA ON E.ID = PA.ID_EVENTO
+GROUP BY E.NOME
+ORDER BY NUM_P/*Listar todos os usuários cadastrados.*/
+SELECT * FROM USUARIO;
+
+/*Obter os nomes dos eventos.*/
+SELECT NOME FROM EVENTO;
+
+/*Exibir os subeventos associados ao evento com ID 1.*/
+SELECT * FROM SUBEVENTO WHERE ID_EVENTO = 1;
+
+ARTICIPANTES DESC;
+
+/*listar eventos com subeventos em mais de um local*/
+SELECT E.NOME AS EVENTO, COUNT(DISTINCT S.LOCAL) AS NUM_LOCAIS
+FROM EVENTO E
+JOIN SUBEVENTO S ON E.ID = S.ID_EVENTO
+GROUP BY E.NOME
+HAVING COUNT(DISTINCT S.LOCAL) > 1;
+
+/*listar os eventos com descrições que contenham a palavra "tecnologia"*/
+SELECT NOME, DESCRICAO
+FROM EVENTO
+WHERE LOWER(DESCRICAO) LIKE '%tecnologia%';
+
+/*exibir subeventos que ocorreram fora da cidade do evento principal*/
+SELECT E.NOME AS EVENTO, S.NOME AS SUBEVENTO, S.LOCAL AS LOCAL_SUBEVENTO, E.LOCAL AS LOCAL_EVENTO
+FROM EVENTO E
+JOIN SUBEVENTO S ON E.ID = S.ID_EVENTO
+WHERE S.LOCAL <> E.LOCAL;
